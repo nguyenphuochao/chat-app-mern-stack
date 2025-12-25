@@ -1,5 +1,11 @@
 import bcrypt from "bcrypt"
 import User from "../models/User.js"
+import Session from "../models/Session.js"
+import jwt from "jsonwebtoken"
+import crypto from "crypto"
+
+const ACCESS_TOKEN_TTL = "30m"; // 30 minutes
+const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days
 
 export const signUp = async (req, res) => {
     try {
@@ -32,17 +38,18 @@ export const signUp = async (req, res) => {
         return res.sendStatus(204);
     } catch (error) {
         console.log("Lỗi khi gọi signUp", error);
-        res.status(500).json({ message: "Có lỗi xảy ra" })
+        return res.status(500).json({ message: "Có lỗi xảy ra" })
     }
 }
 
-export const signIn = async () => {
+export const signIn = async (req, res) => {
     try {
+        // get inputs body
         const { username, password } = req.body
 
         // validate
         if (!username || !password) {
-            return res.status(400).json({ message: "Không thể thiếu username, password" });
+            return res.status(400).json({ message: "Thiếu username, password" });
         }
 
         // check username valid
@@ -59,11 +66,53 @@ export const signIn = async () => {
             return res.status(401).json({ message: "Sai thông tin đăng nhập" });
         }
 
-        // create access token
+        // create accessToken with JWT
+        const accessToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_TTL });
 
-        // return
+        // create refresh token
+        const refreshToken = crypto.randomBytes(64).toString("hex");
+
+        // create new session save refresh token in DB
+        await Session.create({
+            userId: user._id,
+            refreshToken,
+            expiresAt: Date.now() + REFRESH_TOKEN_TTL
+        });
+
+        // return refreshToken to cookies
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true, // không thể truy cập bằng javascript
+            secure: true,// đảm bảo gửi qua https
+            samSite: 'none', // cho phép BE và FE truy cập bằng 2 domain khác nhau
+            maxAge: REFRESH_TOKEN_TTL
+        })
+
+        // return accessToken to response
+        return res.status(200).json({
+            message: `User ${user.displayName} đã login`,
+            accessToken
+        })
     } catch (error) {
         console.log("Lỗi khi gọi signIn", error);
-        res.status(500).json({ message: "Có lỗi xảy ra" })
+        return res.status(500).json({ message: "Có lỗi xảy ra" })
+    }
+}
+
+export const signOut = async (req, res) => {
+    try {
+        // get refreshToken from cookie
+        const token = req.cookies?.refreshToken;
+
+        if (token) {
+            // clear refreshToken in cookie
+            res.clearCookie('refreshToken');
+            // clear refreshToken in Session DB
+            await Session.deleteOne({ refreshToken: token });
+        }
+
+        return res.sendStatus(204);
+    } catch (error) {
+        console.log("Lỗi khi gọi signOut", error);
+        return res.status(500).json({ message: "Có lỗi xảy ra" })
     }
 }
