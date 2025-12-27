@@ -7,3 +7,11 @@ export const authMe = async (req, res) => {
         return res.status(500).json({ message: "Có lỗi xảy ra" })
     }
 }
+
+export const test = (req, res) => {
+    try {
+        return res.sendStatus(204);
+    } catch (error) {
+        console.log(error);
+    }
+}

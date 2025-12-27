@@ -8,6 +8,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
     loading: false,
 
+    setAccessToken: (accessToken) => {
+        set({ accessToken })
+    },
+
     clearState: () => { set({ accessToken: null, user: null, loading: false }) },
 
     signUp: async (firstName, lastName, username, email, password) => {
@@ -30,7 +34,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             // call api
             await authService.signIn(username, password);
             const { accessToken } = await authService.signIn(username, password);
-            set({ accessToken });
+            get().setAccessToken(accessToken);
 
             // after sign in call fetchMe
             await get().fetchMe();
@@ -77,11 +81,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     refresh: async () => {
         try {
             set({ loading: true })
-            const { user, fetchMe } = get();
+            const { user, fetchMe, setAccessToken} = get();
             // call api
             const accessToken = await authService.refresh();
 
-            set({ accessToken })
+            setAccessToken(accessToken);
 
             // after refresh call fetchMe
             if (!user) {
