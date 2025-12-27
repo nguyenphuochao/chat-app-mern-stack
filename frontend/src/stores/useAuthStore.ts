@@ -86,14 +86,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             // after refresh call fetchMe
             if (!user) {
                 await fetchMe();
-                console.log(user);
             }
         } catch (error) {
             console.log(error);
             toast.error("Lỗi khi gọi refreshToken");
+            get().clearState();
         } finally {
             set({ loading: false })
-            get().clearState();
         }
     }
 }))
