@@ -2,17 +2,18 @@ import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@radix-ui/react-label"
-import { Button } from "./ui/button"
-import { Link } from "react-router"
+import { Button } from "../ui/button"
+import { Link, useNavigate } from "react-router"
 import * as z from "zod"
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useAuthStore } from "@/stores/useAuthStore"
 
 const signUpSchema = z.object({
     firstname: z.string().min(1, "Vui lòng nhập tên"),
     lastname: z.string().min(1, "Vui lòng nhập họ"),
-    username: z.string().min(1, "Vui lòng nhập tên đăng nhập"),
-    email: z.string().email("Vui lòng nhập email"),
+    username: z.string().min(3, "Vui lòng nhập tên đăng nhập ít nhất 3 ký tự"),
+    email: z.email("Vui lòng nhập đúng định dạng email"),
     password: z.string().min(6, "Vui lòng nhập password ít nhất 6 kí tự")
 })
 
@@ -20,14 +21,18 @@ const signUpSchema = z.object({
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
+    const navigate = useNavigate();
+    const { signUp } = useAuthStore();
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignUpFormValues>({
         resolver: zodResolver(signUpSchema),
     });
 
-    const onSubmit = (data: SignUpFormValues) => {
+    const onSubmit = async (data: SignUpFormValues) => {
+        const { firstname, lastname, username, email, password } = data
         // call api backend
-        console.log('data', data);
+        await signUp(firstname, lastname, username, email, password);
+        navigate("/signin");
     };
 
     return (
@@ -101,7 +106,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                         <img
                             src="/placeholderSignUp.png"
                             alt="Image"
-                            className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+                            className="absolute top-1/2 -translate-y-1/2 object-cover"
                         />
                     </div>
                 </CardContent>
@@ -109,8 +114,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
 
             {/* policy */}
             <div className="px-6 text-center *:[a]:hover:text-primary">
-                By clicking continue, you agree to our <a href="#" className="underline underline-offset-2">Terms of Service</a>{" "}
-                and <a href="#">Privacy Policy</a>.
+                Bằng cách nhấp vào tiếp tục, bạn đồng ý với chúng tôi <a href="#" className="underline underline-offset-2">Điều khoản dịch vụ</a>{" "}
+                và <a href="#">Chính sách bảo mật</a>.
             </div>
         </div>
     )

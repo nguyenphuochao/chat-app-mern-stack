@@ -2,6 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import { connectDB } from "./libs/db.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 // authRoute
 import authRoute from "./routes/authRoute.js";
@@ -18,6 +19,7 @@ const PORT = process.env.PORT || 5001;
 // middleware
 app.use(express.json()); // support body request json
 app.use(cookieParser());
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
 // public routes
 app.use("/api/auth", authRoute);
