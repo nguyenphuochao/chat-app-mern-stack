@@ -40,14 +40,9 @@ const lastMessageSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: null
-    },
-    unreadCounts: {
-        type: Map,
-        of: Number,
-        default: {}
     }
 }, {
-    timestamps: true
+    _id: false
 });
 
 // conversationSchema
@@ -76,7 +71,14 @@ const conversationSchema = new mongoose.Schema({
     lastMessage: {
         type: lastMessageSchema,
         default: null
+    },
+    unreadCounts: {
+        type: Map,
+        of: Number,
+        default: {}
     }
+}, {
+    timestamps: true
 });
 
 conversationSchema.index({
