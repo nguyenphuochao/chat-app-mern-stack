@@ -13,6 +13,8 @@ import userRoute from "./routes/userRoute.js";
 import friendRoute from "./routes/friendRoute.js";
 // messageRoute
 import messageRoute from "./routes/messageRoute.js";
+// conversationRoute
+import conversationRoute from "./routes/conversationRoute.js";
 
 // load .env
 dotenv.config();
@@ -33,6 +35,7 @@ app.use(protectedRoute);
 app.use("/api/users", userRoute);
 app.use("/api/friends", friendRoute);
 app.use("/api/messages", messageRoute);
+app.use("/api/conversations", conversationRoute);
 
 // start server
 connectDB().then(() => {

@@ -4,13 +4,13 @@ const pair = (a, b) => (a < b ? [a, b] : [b, a]);
 
 export const checkFriendShip = async (req, res, next) => {
     try {
-        // get current account login
+        // todo: chat direct
         const me = req.user._id.toString();
-
         const recipientId = req.body?.recipientId ?? null;
+        const memberIds = req.body.memberIds ?? [];
 
-        if (!recipientId) {
-            return res.status(400).json({ message: "Cần cung cấp recipientId" })
+        if (!recipientId && memberIds.length === 0) {
+            return res.status(400).json({ message: "Cần cung cấp recipientId hoặc memberIds" })
         }
 
         if (recipientId) {
@@ -26,6 +26,21 @@ export const checkFriendShip = async (req, res, next) => {
         }
 
         // todo: chat group
+        const friendChecks = memberIds.map(async (memberId) => {
+            const [userA, userB] = pair(me, memberId);
+            const friend = await Friend.findOne({ userA, userB });
+            return friend ? null : memberId;
+        });
+
+        const results = await Promise.all(friendChecks);
+        const notFriends = results.filter(Boolean);
+
+        if (notFriends.length > 0) {
+            return res.status(403).json({ message: "Bạn chỉ có thể thêm bạn bè vào nhóm", notFriends });
+        }
+
+        next();
+
     } catch (error) {
         console.log("Lỗi khi gọi middleware checkFriendShip", error);
         return res.status(500).json({ message: "Lỗi hệ thống" })
