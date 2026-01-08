@@ -1,3 +1,4 @@
+import Conversation from '../models/Conversation.js';
 import Friend from '../models/Friend.js';
 
 const pair = (a, b) => (a < b ? [a, b] : [b, a]);
@@ -43,6 +44,33 @@ export const checkFriendShip = async (req, res, next) => {
 
     } catch (error) {
         console.log("Lỗi khi gọi middleware checkFriendShip", error);
+        return res.status(500).json({ message: "Lỗi hệ thống" })
+    }
+}
+
+export const checkGroupMemberShip = async (req, res, next) => {
+    try {
+        const { conversationId } = req.body;
+        const userId = req.user._id;
+
+        const conversation = await Conversation.findById(conversationId);
+
+        if (!conversation) {
+            return res.status(404).json({ message: "Không tìm thấy cuộc trò chuyện" });
+        }
+
+        const isMember = conversation.participants.some((p) => p.userId.toString() === userId.toString());
+
+        if (!isMember) {
+            return res.status(401).json({ message: "Bạn không ở trong group này" });
+        }
+
+        req.conversation = conversation;
+
+        next();
+
+    } catch (error) {
+        console.log("Lỗi khi gọi middleware checkGroupMemberShip", error);
         return res.status(500).json({ message: "Lỗi hệ thống" })
     }
 }

@@ -1,0 +1,336 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "chat-app-mern-stack",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5001/api"
+    }
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "summary": "signUp",
+        "responses": {
+            "200": { "description": "success" },
+            "400": { "description": "invalid input" },
+            "401": { "description": "Unauthorized" },
+            "500": { "description": "Internal server error" }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "color"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "username": "haonp",
+                "email": "haonp@gmail.com",
+                "password": "123456",
+                "firstName": "Hao",
+                "lastName": "Nguyen"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "summary": "signIn",
+        "responses": {
+            "200": { "description": "success" },
+            "400": { "description": "invalid input" },
+            "401": { "description": "Unauthorized" },
+            "500": { "description": "Internal server error" }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "color"
+                  }
+                }
+              },
+              "example": {
+                "username": "haonp",
+                "password": "123456"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "summary": "refresh",
+        "responses": {},
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "summary": "authMe",
+        "responses": {},
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/friends/requests": {
+      "post": {
+        "summary": "sendFriendRequest",
+        "responses": {},
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "to": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "to": "694aae64eb10029ba6b1ddae",
+                "message": "Xin chào, kết bạn nhé!"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "getFriendRequests",
+        "responses": {},
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/friends/requests/695135005595842abcad66b8/accept": {
+      "post": {
+        "summary": "acceptFriendRequest",
+        "responses": {},
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/friends/requests/6951369670651ae7900df74a/decline": {
+      "get": {
+        "summary": "declineFriendRequest",
+        "responses": {}
+      }
+    },
+    "/friends": {
+      "get": {
+        "summary": "getAllFriends",
+        "responses": {},
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/messages/direct": {
+      "post": {
+        "summary": "sendDirectMessage",
+        "responses": {},
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "recipientId": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "conversationId": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "recipientId": "694aae64eb10029ba6b1ddae",
+                "content": "Tin nhắn thứ 2",
+                "conversationId": "69536c82b2d2f5a73c1d2ef3"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/group": {
+      "post": {
+        "summary": "sendGroupMessage",
+        "responses": {},
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "conversationId": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "conversationId": "6954ae47afc50a93de476a00",
+                "content": "hello em"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/conversations": {
+      "post": {
+        "summary": "createConversation",
+        "responses": {},
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "memberIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "type": "group",
+                "name": "Group ABC",
+                "memberIds": [
+                  "694aae64eb10029ba6b1ddae",
+                  "694fc8a47ac51bc8883f6221"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "getConversations",
+        "responses": {},
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/conversations/69536c82b2d2f5a73c1d2ef3/messages": {
+      "get": {
+        "summary": "getMessages",
+        "responses": {},
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

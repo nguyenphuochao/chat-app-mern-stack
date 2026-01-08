@@ -1,4 +1,5 @@
 import Conversation from "../models/Conversation.js";
+import Message from "../models/Message.js";
 
 export const createConversation = async (req, res) => {
     try {
@@ -107,6 +108,39 @@ export const getConversations = async (req, res) => {
         return res.status(200).json({ conversations: formatted });
     } catch (error) {
         console.log("Lỗi khi gọi getConversations", error);
+        return res.status(500).json({ message: "Lỗi hệ thống" })
+    }
+}
+
+export const getMessages = async (req, res) => {
+    try {
+        // conversations/${conversationId}/messages?limit=${pageLimit}&cursor=${cursor}
+        const { conversationId } = req.params;
+        const { limit = 50, cursor } = req.params;
+
+        const query = { conversationId };
+
+        if (cursor) {
+            query.createAt = { $lt: new Date(cursor) };
+        }
+
+        let messages = await Message.find(query)
+            .sort({ createAt: -1 })
+            .limit(Number(limit) + 1);
+
+        let nextCursor = null;
+
+        if (messages.length > Number(limit)) {
+            const nextMessage = messages[messages.length - 1];
+            nextCursor = nextMessage.createdAt.toISOString();
+            messages.pop();
+        }
+
+        messages = messages.reverse();
+
+        return res.status(200).json({ messages, nextCursor });
+    } catch (error) {
+        console.log("Lỗi khi gọi getMessage", error);
         return res.status(500).json({ message: "Lỗi hệ thống" })
     }
 }
