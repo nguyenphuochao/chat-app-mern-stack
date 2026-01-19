@@ -1,28 +1,18 @@
-import Logout from '@/components/auth/Logout'
-import { Button } from '@/components/ui/button'
-import api from '@/lib/axios'
-import { useAuthStore } from '@/stores/useAuthStore'
+import { SidebarProvider } from '@/components/ui/sidebar'
+import { AppSidebar } from '@/components/sidebar/app-sidebar'
+import ChatWindowLayout from '@/components/chat/ChatWindowLayout'
 
 const ChatAppPage = () => {
 
-  const user = useAuthStore((s) => s.user)
+    return (
+        <SidebarProvider>
+            <AppSidebar />
 
-  const handleTest = async () => {
-    try {
-      await api.get("/users/test", { withCredentials: true });
-      console.log("OK");
-    } catch (error) {
-      console.log("Error");
-    }
-  }
-
-  return (
-    <>
-      <div className='username'>Xin chào: <span className='font-bold'>{ user?.username }</span></div>
-      <Logout />
-      <Button onClick={handleTest}>Test</Button>
-    </>
-  )
+            <div className='flex h-screen w-full p-2'>
+                <ChatWindowLayout />
+            </div>
+        </SidebarProvider>
+    )
 }
 
 export default ChatAppPage

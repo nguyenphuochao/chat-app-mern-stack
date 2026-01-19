@@ -4,8 +4,18 @@ import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import { Toaster } from 'sonner'
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import { useThemeStore } from './stores/useThemeStore';
+import { useEffect } from 'react';
 
 const App = () => {
+
+  const { isDark, setTheme } = useThemeStore();
+
+  // Load theme dark mode
+  useEffect(() => {
+    setTheme(isDark);
+  }, [isDark])
+
   return (
     <>
       <Toaster richColors />
