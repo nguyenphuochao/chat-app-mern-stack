@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { authService } from "@/services/authService";
 import type { AuthState } from "@/types/store";
 import { persist } from "zustand/middleware";
+import { useChatStore } from "./useChatStore";
 
 export const useAuthStore = create<AuthState>()(
     persist(
@@ -18,6 +19,7 @@ export const useAuthStore = create<AuthState>()(
             clearState: () => { 
                 set({ accessToken: null, user: null, loading: false });
                 localStorage.clear();
+                useChatStore.getState().reset();
             },
 
             signUp: async (firstName, lastName, username, email, password) => {
@@ -39,6 +41,7 @@ export const useAuthStore = create<AuthState>()(
                     set({ loading: true });
 
                     localStorage.clear();
+                    useChatStore.getState().reset();
                     
                     // call api
                     await authService.signIn(username, password);
@@ -47,6 +50,7 @@ export const useAuthStore = create<AuthState>()(
 
                     // after sign in call fetchMe
                     await get().fetchMe();
+                    useChatStore.getState().fetchConversations();
 
                     toast.success("Đăng nhập thành công!");
                 } catch (error) {
