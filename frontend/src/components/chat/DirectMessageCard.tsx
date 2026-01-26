@@ -3,6 +3,9 @@ import ChatCard from './ChatCard'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useChatStore } from '@/stores/useChatStore';
 import { cn } from '@/lib/utils';
+import UserAvatar from './UserAvatar';
+import StatusBadge from './StatusBadge';
+import UnreadCountBadge from './UnreadCountBadge';
 
 const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
 
@@ -34,7 +37,20 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
     isActive={activeConversationId === convo._id}
     onSelect={handleSelectConversation}
     unreadCount={unreadCount}
-    leftSection={<img src={otherUser.avatarUrl ?? ""} className="w-8 h-8 rounded-full" />}
+    leftSection={
+      <>
+        <UserAvatar 
+          type="sidebar"
+          name={otherUser.displayName ?? ""}
+          avatarUrl={otherUser.avatarUrl ?? undefined}
+        />
+        {/* todo: socket io */}
+        <StatusBadge status='offline' />
+        {
+          unreadCount > 0 && <UnreadCountBadge unreadCount={unreadCount} />
+        }
+      </>
+    }
     subtitle={
       <p className={cn("text-sm truncate", unreadCount > 0 ? "font-medium text-foreground" : "text-muted-foreground")}>
         {lastMessage}
