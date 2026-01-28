@@ -3,6 +3,8 @@ import type { ChatState } from "@/types/store";
 import { toast } from "sonner";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useAuthStore } from "./useAuthStore";
+import { merge } from "node_modules/zod/v4/core/util.d.cts";
 
 export const useChatStore = create<ChatState>()(
     persist(
@@ -10,27 +12,79 @@ export const useChatStore = create<ChatState>()(
             conversations: [],
             messages: {},
             activeConversationId: null,
-            loading: false,
+            convoLoading: false,
+            messageLoading: false,
 
             reset: () => {
                 set({
                     conversations: [],
                     messages: {},
                     activeConversationId: null,
-                    loading: false,
+                    convoLoading: false,
                 })
             },
             setActiveConversation: (id) => set({ activeConversationId: id }),
             fetchConversations: async () => {
                 try {
-                    set({ loading: true })
+                    set({ convoLoading: true })
                     const { conversations } = await chatService.fetchConversations();
-                    set({ conversations, loading: false });
+                    set({ conversations, convoLoading: false });
                 } catch (error) {
                     console.log(error);
                     toast.error("Lỗi khi lấy dữ liệu chat");
                 } finally {
-                    set({ loading: false })
+                    set({ convoLoading: false })
+                }
+            },
+            fetchMessages: async (conversationId) => {
+                try {
+                    const { activeConversationId, messages } = get();
+                    const { user } = useAuthStore.getState();
+
+                    const convoId = conversationId ?? activeConversationId;
+
+                    if (!convoId) return;
+
+                    const current = messages?.[convoId]
+                    const nextCursor = current?.nextCursor === undefined ? "" : current?.nextCursor;
+
+                    if (nextCursor === null) return;
+
+                    set({ messageLoading: true });
+
+                    try {
+                        const { messages: fetched, cursor } = await chatService.fetchMessages(convoId, nextCursor);
+                        const processed = fetched.map((m) => ({
+                            ...m,
+                            isOwn: m.senderId === user?._id,
+                        }));
+
+                        set((state) => {
+                            const prev = state.messages[convoId]?.items ?? [];
+                            const merged = prev.length > 0 ? [...processed, ...prev] : processed;
+
+                            return {
+                                messages: {
+                                    ...state.messages,
+                                    [convoId]: {
+                                        items: merged,
+                                        hasMore: !!cursor,
+                                        nextCursor: cursor ?? null
+                                    }
+                                }
+                            }
+                        });
+
+                    } catch (error) {
+                        console.log(error);
+                        toast.error("Lỗi khi lấy dữ liệu fetch message");
+                    } finally {
+                        set({ messageLoading: false })
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                    toast.error("Lỗi khi lấy dữ liệu messages");
                 }
             }
         }),
