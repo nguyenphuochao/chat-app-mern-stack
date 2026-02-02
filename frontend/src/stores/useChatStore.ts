@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useAuthStore } from "./useAuthStore";
-import { merge } from "node_modules/zod/v4/core/util.d.cts";
 
 export const useChatStore = create<ChatState>()(
     persist(
@@ -45,7 +44,7 @@ export const useChatStore = create<ChatState>()(
 
                     if (!convoId) return;
 
-                    const current = messages?.[convoId]
+                    const current = messages?.[convoId];
                     const nextCursor = current?.nextCursor === undefined ? "" : current?.nextCursor;
 
                     if (nextCursor === null) return;

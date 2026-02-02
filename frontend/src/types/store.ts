@@ -1,5 +1,4 @@
-import type { Message } from "react-hook-form";
-import type { Conversation } from "./chat";
+import type { Conversation, Message } from "./chat";
 import type { User } from "./user";
 
 export interface AuthState {
