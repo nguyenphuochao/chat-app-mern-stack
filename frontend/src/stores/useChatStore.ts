@@ -85,6 +85,35 @@ export const useChatStore = create<ChatState>()(
                     console.log(error);
                     toast.error("Lỗi khi lấy dữ liệu messages");
                 }
+            },
+            sendDirectMessage: async (recipientId, content, imgUrl) => {
+                try {
+                    const { activeConversationId } = get();
+                    await chatService.sendDirectMessage(recipientId, content, imgUrl, activeConversationId || undefined);
+
+                    set((state) => ({
+                        conversations: state.conversations.map((c) =>
+                            c._id === activeConversationId ? { ...c, seenBy: [] } : c
+                        )
+                    }))
+                } catch (error) {
+                    console.error("Lỗi xảy ra khi gửi sendDirectMessage", error);
+
+                }
+            },
+            sendGroupMessage: async (conversationId, content, imgUrl) => {
+                try {
+                    await chatService.sendGroupMessage(conversationId, content, imgUrl);
+
+                    set((state) => ({
+                        conversations: state.conversations.map((c) =>
+                            c._id === get().activeConversationId ? { ...c, seenBy: [] } : c
+                        )
+                    }))
+                } catch (error) {
+                    console.error("Lỗi xảy ra khi gửi sendGroupMessage", error);
+
+                }
             }
         }),
         {

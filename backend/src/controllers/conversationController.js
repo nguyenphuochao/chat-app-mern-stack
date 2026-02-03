@@ -125,7 +125,7 @@ export const getMessages = async (req, res) => {
         }
 
         let messages = await Message.find(query)
-            .sort({ createAt: -1 })
+            .sort({ createdAt: -1 })
             .limit(Number(limit) + 1);
 
         let nextCursor = null;

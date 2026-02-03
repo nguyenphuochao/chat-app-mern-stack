@@ -2,10 +2,10 @@ import { useChatStore } from "@/stores/useChatStore";
 import type { Conversation } from "@/types/chat"
 import { SidebarTrigger } from "../ui/sidebar";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { Separator } from "@radix-ui/react-separator";
 import UserAvatar from "./UserAvatar";
 import StatusBadge from "./StatusBadge";
 import GroupChatAvatar from "./GroupChatAvatar";
+import { Separator } from "../ui/separator";
 
 const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
 
@@ -34,7 +34,7 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
         <header className="sticky top-0 z-10 px-4 py-2 flex items-center bg-background">
             <div className="flex items-center gap-2 w-full">
                 <SidebarTrigger className="-ml-1 text-foreground" />
-                <Separator 
+                <Separator
                     orientation="vertical"
                     className="mr-2 data-[orientation=vertical]:h-4"
                 />
@@ -45,7 +45,7 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
                         {
                             chat.type === "direct" ? (
                                 <>
-                                    <UserAvatar 
+                                    <UserAvatar
                                         type={"sidebar"}
                                         name={otherUser?.displayName ?? "Moji"}
                                         avatarUrl={otherUser?.avatarUrl || undefined}
@@ -54,18 +54,18 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
                                     <StatusBadge status="online" />
                                 </>
                             ) :
-                            (
-                                <GroupChatAvatar
-                                    participants={chat.participants}
-                                    type="sidebar"
-                                />
-                            )
+                                (
+                                    <GroupChatAvatar
+                                        participants={chat.participants}
+                                        type="sidebar"
+                                    />
+                                )
                         }
                     </div>
 
                     {/* name */}
                     <h2 className="font-semibold text-foreground">
-                        { chat.type === "direct" ? otherUser?.displayName : chat.group?.name }
+                        {chat.type === "direct" ? otherUser?.displayName : chat.group?.name}
                     </h2>
                 </div>
             </div>
