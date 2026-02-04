@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
+import { app, server } from "./socket/index.js";
 import { protectedRoute } from "./middlewares/authMiddleware.js";
 
 // authRoute
@@ -21,7 +22,6 @@ import conversationRoute from "./routes/conversationRoute.js";
 // load .env
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 5001;
 
 // middleware
@@ -45,7 +45,7 @@ app.use("/api/conversations", conversationRoute);
 
 // start server
 connectDB().then(() => {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
         console.log(`server start port ${PORT}`);
     })
 })

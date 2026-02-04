@@ -17,3 +17,7 @@ export const updateConversationAfterCreateMessage = (conversation, message, send
         conversation.unreadCounts.set(memberId, isSender ? 0 : prevCount + 1);
     });
 }
+
+export const emitNewMessage = () => {
+    
+}
