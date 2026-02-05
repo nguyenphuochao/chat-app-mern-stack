@@ -149,7 +149,7 @@ export const getUserConversationsForSocketIO = async (userId) => {
     try {
         const conversations = await Conversation.find(
             { "participants.userId": userId },
-            { _id: 1 }
+            { _id: 1 } // get only _id
         );
 
         return conversations.map((c) => c._id.toString());
