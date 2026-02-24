@@ -200,8 +200,8 @@ export const markAsSeen = async (req, res) => {
             }
         });
 
-        return res.status(200).json({ 
-            message: "Mark as seen successfully" ,
+        return res.status(200).json({
+            message: "Mark as seen successfully",
             seenBy: updated?.seenBy || [],
             myUnreadCount: updated?.unreadCounts[userId] || 0
         });
