@@ -158,3 +158,56 @@ export const getUserConversationsForSocketIO = async (userId) => {
         return [];
     }
 }
+
+export const markAsSeen = async (req, res) => {
+    try {
+        const { conversationId } = req.params;
+        const userId = req.user._id.toString();
+
+        const conversation = await Conversation.findById(conversationId).lean();
+
+        if (!conversation) {
+            return res.status(404).json({ message: "Không tìm thấy cuộc trò chuyện" });
+        }
+
+        const lastMessage = conversation.lastMessage;
+
+        if (!lastMessage) {
+            return res.status(200).json({ message: "Không có tin nhắn để mark as seen" });
+        }
+
+        if (lastMessage.senderId.toString() === userId) {
+            return res.status(200).json({ message: "Sender không cần mark as seen" });
+        }
+
+        const updated = await Conversation.findByIdAndUpdate(conversationId, {
+            $addToSet: { seenBy: userId },
+            $set: { [`unreadCounts.${userId}`]: 0 }
+        }, {
+            new: true // return document after update
+        })
+
+        // socket io
+        io.to(conversationId).emit("read-message", {
+            conversation: updated,
+            lastMessage: {
+                _id: updated?.lastMessage._id,
+                content: updated?.lastMessage.content,
+                createdAt: updated?.lastMessage.createdAt,
+                sender: {
+                    _id: updated?.lastMessage.senderId,
+                }
+            }
+        });
+
+        return res.status(200).json({ 
+            message: "Mark as seen successfully" ,
+            seenBy: updated?.seenBy || [],
+            myUnreadCount: updated?.unreadCounts[userId] || 0
+        });
+
+    } catch (error) {
+        console.log("Lỗi khi gọi markAsSeen", error);
+        return res.status(500).json({ message: "Lỗi hệ thống" })
+    }
+}
