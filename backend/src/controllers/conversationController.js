@@ -1,5 +1,6 @@
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
+import { io } from "../socket/index.js";
 
 export const createConversation = async (req, res) => {
     try {
@@ -116,12 +117,12 @@ export const getMessages = async (req, res) => {
     try {
         // conversations/${conversationId}/messages?limit=${pageLimit}&cursor=${cursor}
         const { conversationId } = req.params;
-        const { limit = 50, cursor } = req.params;
+        const { limit = 50, cursor } = req.query;
 
         const query = { conversationId };
 
         if (cursor) {
-            query.createAt = { $lt: new Date(cursor) };
+            query.createdAt = { $lt: new Date(cursor) };
         }
 
         let messages = await Message.find(query)
