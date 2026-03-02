@@ -18,7 +18,7 @@ export interface Friend {
 }
 
 export interface FriendRequest {
-  id: string;
+  _id: string;
   username: string;
   displayName: string;
   avatarUrl?: string;
