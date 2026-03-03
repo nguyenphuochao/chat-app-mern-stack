@@ -1,10 +1,10 @@
 import { friendService } from "@/services/friendService";
 import type { FriendState } from "@/types/store";
-import { toast } from "sonner";
 import { create } from "zustand";
 
 export const useFriendStore = create<FriendState>((set, get) => ({
     loading: false,
+    friends: [],
     receivedList: [],
     sentList: [],
     searchByUsername: async (username) => {
@@ -57,8 +57,6 @@ export const useFriendStore = create<FriendState>((set, get) => ({
                 receivedList: state.receivedList.filter((r) => r._id !== requestId)
             }))
 
-            const { message } = result;
-            toast.success(message)
         } catch (error) {
             console.log("Lỗi xảy ra khi gọi acceptRequest", error);
         } finally {
@@ -70,12 +68,24 @@ export const useFriendStore = create<FriendState>((set, get) => ({
         try {
             set({ loading: true })
             await friendService.declineRequest(requestId);
-            toast.success("Đã hủy lời mời kết bạn!")
             set((state) => ({
                 receivedList: state.receivedList.filter((r) => r._id !== requestId)
             }))
         } catch (error) {
             console.log("Lỗi xảy ra khi gọi declineRequest", error);
+        } finally {
+            set({ loading: false })
+        }
+    },
+
+    getFriends: async () => {
+        try {
+            set({ loading: true })
+            const friends = await friendService.getFriendList();
+            set({ friends: friends });
+        } catch (error) {
+            console.log("Lỗi xảy ra khi gọi getFriendList", error);
+            set({ friends: [] });
         } finally {
             set({ loading: false })
         }

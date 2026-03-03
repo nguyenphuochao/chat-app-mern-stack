@@ -23,7 +23,7 @@ export const friendService = {
 
     async acceptRequest(requestId: string) {
         try {
-            const res = await api.post(`/requests/${requestId}/accept`)
+            const res = await api.post(`friends/requests/${requestId}/accept`)
             const { newFriend, message } = res.data;
             return { newFriend, message };
         } catch (error) {
@@ -33,9 +33,18 @@ export const friendService = {
 
     async declineRequest(requestId: string) {
         try {
-            await api.post(`/requests/${requestId}/decline`)
+            await api.post(`friends/requests/${requestId}/decline`)
         } catch (error) {
             console.log("Lỗi xảy ra khi gọi declineRequest", error);
+        }
+    },
+
+    async getFriendList() {
+        try {
+            const res = await api.get(`/friends`);
+            return res.data.friends;
+        } catch (error) {
+            console.log("Lỗi xảy ra khi gọi getFriendList", error);
         }
     }
 }

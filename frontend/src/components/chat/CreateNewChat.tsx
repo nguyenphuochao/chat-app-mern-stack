@@ -1,7 +1,52 @@
+import { useFriendStore } from "@/stores/useFriendStore"
+import { Card } from "../ui/card"
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Button } from "../ui/button";
+import { MessageCircle } from "lucide-react";
 
 const CreateNewChat = () => {
+    const { getFriends } = useFriendStore();
+
+    const handleGetFriends = async () => {
+        await getFriends();
+    }
     return (
-        <div>CreateNewChat</div>
+        <div className="flex gap-2">
+            <Card className="flex-1 p-3 glass hover:shadow-soft transition-smooth cursor-pointer group/card"
+                onClick={handleGetFriends}>
+
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <div className="flex items-center gap-4">
+                            <div className="size-8 bg-gradient-chat rounded-full flex items-center justify-center group-hover/card:scale-110 transition-bounce">
+                                <MessageCircle className="size-4 text-white" />
+                            </div>
+                            <span className="text-sm font-medium capitalize">Gửi tin nhắn mới</span>
+                        </div>
+                    </DialogTrigger>
+
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Tin nhắn mới</DialogTitle>
+                        </DialogHeader>
+
+                        <div>
+                            <p>Danh sách 1</p>
+                            <p>Danh sách 1</p>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            </Card>
+        </div>
     )
 }
 
