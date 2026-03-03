@@ -2,16 +2,10 @@ import { useFriendStore } from "@/stores/useFriendStore"
 import { Card } from "../ui/card"
 import {
     Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from "../ui/button";
 import { MessageCircle } from "lucide-react";
+import FriendListModal from "../createNewChat/FriendListModal";
 
 const CreateNewChat = () => {
     const { getFriends } = useFriendStore();
@@ -34,16 +28,7 @@ const CreateNewChat = () => {
                         </div>
                     </DialogTrigger>
 
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Tin nhắn mới</DialogTitle>
-                        </DialogHeader>
-
-                        <div>
-                            <p>Danh sách 1</p>
-                            <p>Danh sách 1</p>
-                        </div>
-                    </DialogContent>
+                    <FriendListModal />
                 </Dialog>
             </Card>
         </div>
