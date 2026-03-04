@@ -71,7 +71,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
 
         {/* Group Chat */}
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupLabel className="uppercase">
             Nhóm chat
           </SidebarGroupLabel>
@@ -83,7 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupContent>
             <GroupChatList />
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
 
         {/* Direct Message */}
         <SidebarGroup>
