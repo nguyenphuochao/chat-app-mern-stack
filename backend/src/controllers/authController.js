@@ -92,7 +92,7 @@ export const signIn = async (req, res) => {
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true, // không thể truy cập bằng javascript
             secure: true,// đảm bảo gửi qua https
-            samSite: 'none', // cho phép BE và FE truy cập bằng 2 domain khác nhau
+            sameSite: 'none', // cho phép BE và FE truy cập bằng 2 domain khác nhau
             maxAge: REFRESH_TOKEN_TTL
         })
 
