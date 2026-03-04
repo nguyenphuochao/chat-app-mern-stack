@@ -3,9 +3,15 @@ import { DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { MessageCircleMore, User } from 'lucide-react';
 import { Card } from '../ui/card';
 import UserAvatar from '../chat/UserAvatar';
+import { useChatStore } from '@/stores/useChatStore';
 
 const FriendListModal = () => {
   const { friends } = useFriendStore();
+  const { createConversation } = useChatStore();
+
+  const handleAddConversation = async (friendId: string) => {
+    await createConversation("direct", "", [friendId]);
+  }
 
   return (
     <DialogContent className='glass max-w-md'>
@@ -26,6 +32,7 @@ const FriendListModal = () => {
           {
             friends.map((friend) => (
               <Card
+              onClick={() => handleAddConversation(friend._id)}
                 key={friend._id}
                 className='p-3 cursor-pointer trasition-smooth hover:shadow-soft glass hover:bg-muted/30 group/friendCard'
               >

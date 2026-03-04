@@ -43,6 +43,8 @@ export interface ChatState {
     addMessage: (message: Message) => Promise<void>;
     updateConversation: (conversation: unknown) => void;
     markAsSeen: () => Promise<void>;
+    addConvo: (convo: Conversation) => void;
+    createConversation: (type: "direct" | "group", name: string, memberIds: string[]) => Promise<void>;
 }
 
 export interface SocketState {
