@@ -4,7 +4,16 @@ import Session from "../models/Session.js"
 import jwt from "jsonwebtoken"
 import crypto from "crypto"
 
-const ACCESS_TOKEN_TTL = "1440m"; // 1 day
+/*
+ Format ACCESS_TOKEN_TTL
+ "60" → 60 giây
+ "10m" → 10 phút
+ "1h" → 1 giờ
+ "7d" → 7 ngày
+ 3600 → 3600 giây (number)
+ */
+
+const ACCESS_TOKEN_TTL = "1d";
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days
 
 export const signUp = async (req, res) => {
