@@ -222,6 +222,22 @@ export const useChatStore = create<ChatState>()(
                 } catch (error) {
                     console.log("Lỗi xảy ra khi gọi createConversation:", error);
                 }
+            },
+
+
+            deleteConversation: async (conversationId) => {
+                try {
+                    set({ convoLoading: true })
+                    await chatService.deleteConversation(conversationId);
+
+                    set((state) => ({
+                        conversations: state.conversations.filter(c => c._id !== conversationId)
+                    }))
+                } catch (error) {
+                    console.log("Lỗi xảy ra khi gọi deleteConversation:", error);
+                } finally {
+                    set({ convoLoading: true })
+                }
             }
         }),
         {

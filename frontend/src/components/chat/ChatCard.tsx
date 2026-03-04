@@ -1,6 +1,9 @@
 import { Card } from "@/components/ui/card"
 import { cn, formatOnlineTime } from "@/lib/utils";
-import { MoreHorizontal } from "lucide-react";
+import { useChatStore } from "@/stores/useChatStore";
+import { MoreHorizontal, Trash2Icon } from "lucide-react";
+import { toast } from "sonner";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 interface ChatCardProps {
     convoId: string;
@@ -23,6 +26,16 @@ const ChatCard = ({
     leftSection,
     subtitle
 }: ChatCardProps) => {
+
+    const { deleteConversation } = useChatStore();
+
+    const handleDeleteConversation = async (convoId: string) => {
+        if (confirm("Bạn chắc xóa cuộc trò chuyện này?")) {
+            await deleteConversation(convoId);
+            toast.success("Đã xóa cuộc trò chuyện")
+        }
+    }
+
     return (
         <Card
             key={convoId}
@@ -47,9 +60,27 @@ const ChatCard = ({
 
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1 flex-1 min-w-0">{subtitle}</div>
-                        <MoreHorizontal
-                            className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 hover:size-5 transition-smooth"
-                        />
+                        <div>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <MoreHorizontal
+                                        className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 hover:size-5 transition-smooth"
+                                    />
+                                </DropdownMenuTrigger>
+
+                                <DropdownMenuContent className="w-40 h-15" align="start">
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem className="cursor-pointer">
+                                            <div className="flex items-center gap-2" onClick={() => handleDeleteConversation(convoId)}>
+                                                <div><Trash2Icon /></div>
+                                                <p>Xóa đoạn chat</p>
+                                            </div>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+
                     </div>
                 </div>
             </div>

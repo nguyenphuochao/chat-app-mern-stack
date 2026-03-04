@@ -56,5 +56,9 @@ export const chatService = {
     async createConversation(type: "direct" | "group", name: string, memberIds: string[]) {
         const res = await api.post("/conversations", { type, name, memberIds });
         return res.data.conversation;
+    },
+
+    async deleteConversation(conversationId: string) {
+        await api.delete(`/conversations/${conversationId}/delete`);
     }
 }
