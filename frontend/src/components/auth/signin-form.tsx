@@ -8,10 +8,16 @@ import * as z from "zod"
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from "@/stores/useAuthStore"
+import { Eye, EyeOff } from "lucide-react"
+import { useState } from "react"
 
 const signInSchema = z.object({
-  username: z.string().min(3, "Vui lòng nhập tên đăng nhập ít nhất 3 ký tự"),
-  password: z.string().min(6, "Vui lòng nhập password ít nhất 6 kí tự")
+  username: z
+    .string().min(1,"Vui lòng nhập tên đăng nhập")
+    .min(5, "Tên đang nhập ít nhất 3 kí tự."),
+  password: z
+    .string().min(1, "Vui lòng nhập password")
+    .min(6, "Password ít nhất 6 kí tự")
 });
 
 // Infer the TypeScript type from the schema
@@ -24,6 +30,7 @@ export function SigninForm({
 
   const navigate = useNavigate();
   const { signIn } = useAuthStore();
+  const [isShowPassword, setIsShowPassword] = useState(false);
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -35,6 +42,10 @@ export function SigninForm({
     await signIn(username, password);
     navigate("/");
   };
+
+  const handleTogglePassword = () => {
+    setIsShowPassword(!isShowPassword);
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -55,15 +66,21 @@ export function SigninForm({
               {/* username */}
               <div className="flex flex-col gap-3">
                 <Label htmlFor="username" className="block tetx-sm">Tên đăng nhập</Label>
-                <Input {...register("username")} type="text" id="username" placeholder="Moji" />
+                <Input {...register("username")} type="text" id="username" placeholder="Nhập username" />
                 {/* todo: error message */}
                 {errors.username && <span className="text-red-500 text-sm">{errors.username.message}</span>}
               </div>
 
               {/* password */}
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 relative">
                 <Label htmlFor="password" className="block tetx-sm">Mật khẩu</Label>
-                <Input {...register("password")} type="password" id="password" />
+                <Input {...register("password")} type={isShowPassword ? "text" : "password"} id="password" placeholder="Nhập password" />
+                {
+                  isShowPassword ? 
+                    <Eye onClick={handleTogglePassword} size="16" className="absolute top-12 right-3 cursor-pointer" /> :
+                    <EyeOff onClick={handleTogglePassword} size="16" className="absolute top-12 right-3 cursor-pointer" />
+                }
+
                 {/* todo: error message */}
                 {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
               </div>
