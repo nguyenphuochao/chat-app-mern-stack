@@ -4,8 +4,10 @@ import { DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
 import { UserPlus } from "lucide-react";
 import type { User } from "@/types/user";
 import { useFriendStore } from "@/stores/useFriendStore";
-import { de } from "zod/v4/locales";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import SearchForm from "../addFriendModal/SearchForm";
+import SendFriendRequestForm from "../addFriendModal/SendFriendRequestForm";
 
 export interface IFormValues {
   username: string;
@@ -27,6 +29,49 @@ const AddFriendModal = () => {
     defaultValues: { username: "", message: "" }
   });
 
+  const usernameValue = watch("username");
+
+  const handleSearch = handleSubmit(async (data) => {
+    const username = data.username.trim();
+    if (!username) return;
+
+    setIsFound(null);
+    setSearchedUsername(username);
+
+    try {
+      const foundUser = await searchByUsername(username);
+      if (foundUser) {
+        setIsFound(true);
+        setSearchUser(foundUser);
+      } else {
+        setIsFound(false);
+      }
+    } catch (error) {
+      console.error(error);
+      setIsFound(false);
+    }
+  })
+
+  const handleSend = handleSubmit(async (data) => {
+    if (!searchUser) return;
+
+    try {
+      const message = await addFriend(searchUser._id, data.message.trim())
+      toast.success(message);
+
+      // reset
+      handleCancel();
+    } catch (error) {
+      console.error(error);
+    }
+  })
+
+  const handleCancel = () => {
+    reset();
+    setSearchedUsername("");
+    setIsFound(null);
+  }
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -44,12 +89,29 @@ const AddFriendModal = () => {
         {
           !isFound && <>
             {/* todo: form search by username */}
+            <SearchForm
+              register={register}
+              errors={errors}
+              loading={loading}
+              usernameValue={usernameValue}
+              isFound={isFound}
+              searchedUsername={searchedUsername}
+              onSubmit={handleSearch}
+              onCancle={handleCancel}
+            />
           </>
         }
 
         {
           isFound && <>
             {/* todo: form send friend request */}
+            <SendFriendRequestForm
+              register={register}
+              loading={loading}
+              searchedUsername={searchedUsername}
+              onSubmit={handleSend}
+              onBack={() => setIsFound(null)}
+            />
           </>
         }
       </DialogContent>

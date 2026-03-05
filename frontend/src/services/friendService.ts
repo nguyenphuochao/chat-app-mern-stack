@@ -7,7 +7,44 @@ export const friendService = {
     },
 
     async sendFriendRequest(to: string, message?: string) {
-        const res = await api.post(`/frends/requests`, { to, message })
+        const res = await api.post(`/friends/requests`, { to, message })
         return res.data.message;
+    },
+
+    async getAllFriendRequest() {
+        try {
+            const res = await api.get(`/friends/requests`);
+            const { sent, received } = res.data;
+            return { sent, received }
+        } catch (error) {
+            console.error("Lỗi xảy ra khi gọi getAllFriendRequest", error);
+        }
+    },
+
+    async acceptRequest(requestId: string) {
+        try {
+            const res = await api.post(`friends/requests/${requestId}/accept`)
+            const { newFriend, message } = res.data;
+            return { newFriend, message };
+        } catch (error) {
+            console.log("Lỗi xảy ra khi gọi acceptRequest", error);
+        }
+    },
+
+    async declineRequest(requestId: string) {
+        try {
+            await api.post(`friends/requests/${requestId}/decline`)
+        } catch (error) {
+            console.log("Lỗi xảy ra khi gọi declineRequest", error);
+        }
+    },
+
+    async getFriendList() {
+        try {
+            const res = await api.get(`/friends`);
+            return res.data.friends;
+        } catch (error) {
+            console.log("Lỗi xảy ra khi gọi getFriendList", error);
+        }
     }
 }

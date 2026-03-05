@@ -4,7 +4,16 @@ import Session from "../models/Session.js"
 import jwt from "jsonwebtoken"
 import crypto from "crypto"
 
-const ACCESS_TOKEN_TTL = "30m"; // 30 minutes
+/*
+ Format ACCESS_TOKEN_TTL
+ "60" → 60 giây
+ "10m" → 10 phút
+ "1h" → 1 giờ
+ "7d" → 7 ngày
+ 3600 → 3600 giây (number)
+ */
+
+const ACCESS_TOKEN_TTL = "1d";
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days
 
 export const signUp = async (req, res) => {
@@ -83,7 +92,7 @@ export const signIn = async (req, res) => {
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true, // không thể truy cập bằng javascript
             secure: true,// đảm bảo gửi qua https
-            samSite: 'none', // cho phép BE và FE truy cập bằng 2 domain khác nhau
+            sameSite: 'none', // cho phép BE và FE truy cập bằng 2 domain khác nhau
             maxAge: REFRESH_TOKEN_TTL
         })
 

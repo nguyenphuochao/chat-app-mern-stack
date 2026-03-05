@@ -140,8 +140,8 @@ export const getAllFriends = async (req, res) => {
                 { userB: userId }
             ]
         })
-            .populate("userA", "_id displayName avatarUrl")
-            .populate("userB", "_id displayName avatarUrl")
+            .populate("userA", "_id displayName avatarUrl username")
+            .populate("userB", "_id displayName avatarUrl username")
             .lean()
 
         // No friends 
@@ -166,7 +166,7 @@ export const getFriendRequests = async (req, res) => {
         // account current login
         const userId = req.user._id;
 
-        const populateFields = "_id displayName avatarUrl";
+        const populateFields = "_id displayName username avatarUrl";
 
         // Join collection query
         const [sent, received] = await Promise.all([

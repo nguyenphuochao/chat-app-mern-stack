@@ -64,7 +64,16 @@ export const createConversation = async (req, res) => {
             { path: "lastMessage.senderId", select: "displayName avatarUrl" }
         ]);
 
-        return res.status(201).json({ conversation });
+        const participants = (conversation.participants || []).map((p) => ({
+            _id: p.userId?._id,
+            displayName: p.userId?.displayName,
+            avatarUrl: p.userId?.avatarUrl ?? null,
+            joinedAt: p.joinedAt
+        }));
+
+        const formatted = { ...conversation.toObject(), participants };
+
+        return res.status(201).json({ conversation: formatted });
     } catch (error) {
         console.log("Lỗi khi gọi createConversation", error);
         return res.status(500).json({ message: "Lỗi hệ thống" })
@@ -209,6 +218,22 @@ export const markAsSeen = async (req, res) => {
 
     } catch (error) {
         console.log("Lỗi khi gọi markAsSeen", error);
+        return res.status(500).json({ message: "Lỗi hệ thống" })
+    }
+}
+
+export const deleteConversation = async (req, res) => {
+    try {
+        const conversationId = req.params.conversationId;
+
+        // delete messages
+        await Message.deleteMany({ conversationId });
+        // delete conversation
+        await Conversation.findByIdAndDelete(conversationId);
+
+        return res.sendStatus(204);
+    } catch (error) {
+        console.log("Lỗi khi gọi deleteConversation", error);
         return res.status(500).json({ message: "Lỗi hệ thống" })
     }
 }
