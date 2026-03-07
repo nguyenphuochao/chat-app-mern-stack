@@ -34,6 +34,7 @@ export interface ChatState {
     activeConversationId: string | null;
     convoLoading: boolean;
     messageLoading: boolean;
+    loading: boolean;
     reset: () => void;
     setActiveConversation: (id: string | null) => void;
     fetchConversations: () => Promise<void>;
@@ -41,7 +42,7 @@ export interface ChatState {
     sendDirectMessage: (recipientId: string, content: string, imgUrl?: string) => Promise<void>;
     sendGroupMessage: (conversationId: string, content: string, imgUrl?: string) => Promise<void>;
     addMessage: (message: Message) => Promise<void>;
-    updateConversation: (conversation: unknown) => void;
+    updateConversation: (conversation: any) => void;
     markAsSeen: () => Promise<void>;
     addConvo: (convo: Conversation) => void;
     createConversation: (type: "direct" | "group", name: string, memberIds: string[]) => Promise<void>;

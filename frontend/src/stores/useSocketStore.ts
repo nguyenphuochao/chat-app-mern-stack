@@ -46,8 +46,8 @@ export const useSocketStore = create<SocketState>((set, get) => ({
                 sender: {
                     _id: conversation.lastMessage.senderId,
                     displayName: "",
-                    avatarUrl: null
-                }
+                    avatarUrl: null,
+                },
             };
 
             const updatedConversation = {
@@ -56,13 +56,18 @@ export const useSocketStore = create<SocketState>((set, get) => ({
                 unreadCounts,
             };
 
-            if (useChatStore.getState().activeConversationId === message.conversationId) {
+            if (
+                useChatStore.getState().activeConversationId ===
+                message.conversationId
+            ) {
                 // đánh dấu đã đọc
                 useChatStore.getState().markAsSeen();
             }
 
             useChatStore.getState().updateConversation(updatedConversation);
 
+            useChatStore.getState().addConvo(conversation);
+            socket.emit('join-conversation', conversation._id);
         });
 
         // read message
@@ -72,13 +77,17 @@ export const useSocketStore = create<SocketState>((set, get) => ({
                 lastMessage,
                 lastMessageAt: conversation.lastMessageAt,
                 unreadCounts: conversation.unreadCounts,
-                seenBy: conversation.seenBy
-            }
+                seenBy: conversation.seenBy,
+            };
 
             useChatStore.getState().updateConversation(updated);
-
         });
 
+        // new group chat
+        socket.on("new-group", (conversation) => {
+            useChatStore.getState().addConvo(conversation);
+            socket.emit('join-conversation', conversation._id);
+        });
     },
     disconnectSocket: () => {
         const socket = get().socket;

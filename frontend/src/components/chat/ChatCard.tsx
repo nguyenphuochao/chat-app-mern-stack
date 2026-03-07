@@ -68,7 +68,7 @@ const ChatCard = ({
                                     />
                                 </DropdownMenuTrigger>
 
-                                <DropdownMenuContent className="w-40 h-15" align="start">
+                                <DropdownMenuContent align="start">
                                     <DropdownMenuGroup>
                                         <DropdownMenuItem className="cursor-pointer">
                                             <div className="flex items-center gap-2" onClick={() => handleDeleteConversation(convoId)}>
