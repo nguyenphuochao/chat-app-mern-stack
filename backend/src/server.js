@@ -7,6 +7,7 @@ import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 import { app, server } from "./socket/index.js";
 import { protectedRoute } from "./middlewares/authMiddleware.js";
+import { v2 as cloudinary } from 'cloudinary';
 
 // authRoute
 import authRoute from "./routes/authRoute.js";
@@ -28,6 +29,13 @@ const PORT = process.env.PORT || 5001;
 app.use(express.json()); // support body request json
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+
+// cloudinary configuration
+cloudinary.config({ 
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+    api_key: process.env.CLOUDINARY_API_KEY, 
+    api_secret: process.env.CLOUDINARY_API_SECRET // Click 'View API Keys' above to copy your API secret
+});
 
 // swagger document
 const swaggerDocument = JSON.parse(fs.readFileSync("./src/swagger.json", "utf-8"));

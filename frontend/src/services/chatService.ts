@@ -59,6 +59,6 @@ export const chatService = {
     },
 
     async deleteConversation(conversationId: string) {
-        await api.delete(`/conversations/${conversationId}/delete`);
+        await api.patch(`/conversations/${conversationId}/delete`);
     }
 }

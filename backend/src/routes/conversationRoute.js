@@ -12,6 +12,6 @@ router.get('/:conversationId/messages', getMessages);
 
 router.patch('/:conversationId/seen', markAsSeen);
 
-router.delete('/:conversationId/delete', deleteConversation);
+router.patch('/:conversationId/delete', deleteConversation);
 
 export default router;

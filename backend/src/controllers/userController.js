@@ -1,4 +1,4 @@
-import User from "../models/User.js"
+import User from "../models/User.js";
 
 export const authMe = async (req, res) => {
     try {
@@ -6,23 +6,60 @@ export const authMe = async (req, res) => {
         return res.status(200).json({ user });
     } catch (error) {
         console.log("Lỗi khi gọi authMe", error);
-        return res.status(500).json({ message: "Có lỗi xảy ra" })
+        return res.status(500).json({ message: "Có lỗi xảy ra" });
     }
-}
+};
 
 export const searchUserByUsername = async (req, res) => {
     try {
-        const { username } = req.query
+        const { username } = req.query;
 
         if (!username || username.trim() === "") {
-            return res.status(400).json({ message: "Cần cung cấp username trong query" });
+            return res
+                .status(400)
+                .json({ message: "Cần cung cấp username trong query" });
         }
 
-        const user = await User.findOne({ username }).select("_id username displayName avatarUrl");
+        const user = await User.findOne({ username }).select(
+            "_id username displayName avatarUrl",
+        );
 
         return res.status(200).json({ user });
     } catch (error) {
         console.log("Lỗi khi gọi searchUserByUsername", error);
-        return res.status(500).json({ message: "Có lỗi xảy ra" })
+        return res.status(500).json({ message: "Có lỗi xảy ra" });
     }
-}
+};
+
+export const uploadAvatar = async () => {
+    try {
+        const file = req.file;
+        const userId = req.user._id;
+
+        if (!file) {
+            return res.status(400).json({ message: "Cần cung cấp file" });
+        }
+
+        const result = await uploadImageFromBuffer(file.buffer);
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                avatarUrl: result.url,
+                avatarId: result.public_id,
+            },
+            {
+                new: true,
+            },
+        ).select("avatarUrl");
+
+        if (!updatedUser.avatarUrl) {
+            return res.status(400).json({ message: "Avatar trả về null" });
+        }
+
+        return res.status(200).json({ avatarUrl: updatedUser.avatarUrl });
+    } catch (error) {
+        console.log("Lỗi khi gọi uploadAvatar", error);
+        return res.status(500).json({ message: "Có lỗi xảy ra" });
+    }
+};

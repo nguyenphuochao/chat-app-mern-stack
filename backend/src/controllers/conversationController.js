@@ -90,7 +90,8 @@ export const getConversations = async (req, res) => {
     try {
         const userId = req.user._id;
         const conversations = await Conversation.find({
-            'participants.userId': userId
+            'participants.userId': userId,
+            'deletedBy': { $ne: userId } // !== userId
         })
             .sort({ lastMessage: -1, updatedAt: -1 })
             .populate({
@@ -134,7 +135,11 @@ export const getMessages = async (req, res) => {
         const { conversationId } = req.params;
         const { limit = 50, cursor } = req.query;
 
-        const query = { conversationId };
+        const conversation = await Conversation.findById(conversationId);
+
+        const query = { 
+            conversationId,
+        };
 
         if (cursor) {
             query.createdAt = { $lt: new Date(cursor) };
@@ -231,12 +236,17 @@ export const markAsSeen = async (req, res) => {
 export const deleteConversation = async (req, res) => {
     try {
         const conversationId = req.params.conversationId;
+        const userId = req.user._id.toString();
 
-        // delete messages
-        await Message.deleteMany({ conversationId });
-        // delete conversation
-        await Conversation.findByIdAndDelete(conversationId);
-
+        // update conversation with deletedBy
+        await Conversation.findByIdAndUpdate(conversationId, {
+            $addToSet: { 
+                'deletedBy': { userId, deletedAt: Date.now() }
+            }
+        }, {
+            new: true
+        });
+        
         return res.sendStatus(204);
     } catch (error) {
         console.log("Lỗi khi gọi deleteConversation", error);
