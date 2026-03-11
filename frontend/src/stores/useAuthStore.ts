@@ -13,10 +13,14 @@ export const useAuthStore = create<AuthState>()(
             loading: false,
 
             setAccessToken: (accessToken) => {
-                set({ accessToken })
+                set({ accessToken });
             },
 
-            clearState: () => { 
+            setUser: (user) => {
+                set({ user });
+            },
+
+            clearState: () => {
                 set({ accessToken: null, user: null, loading: false });
                 useChatStore.getState().reset();
                 localStorage.clear();
@@ -25,15 +29,23 @@ export const useAuthStore = create<AuthState>()(
 
             signUp: async (firstName, lastName, username, email, password) => {
                 try {
-                    set({ loading: true })
+                    set({ loading: true });
                     // call api
-                    await authService.signUp(firstName, lastName, username, email, password);
-                    toast.success("Đăng ký thành công! Chuyển sang trang đăng nhập");
+                    await authService.signUp(
+                        firstName,
+                        lastName,
+                        username,
+                        email,
+                        password,
+                    );
+                    toast.success(
+                        "Đăng ký thành công! Chuyển sang trang đăng nhập",
+                    );
                 } catch (error) {
                     console.log(error);
                     toast.error("Đăng ký không thành công");
                 } finally {
-                    set({ loading: false })
+                    set({ loading: false });
                 }
             },
 
@@ -44,10 +56,13 @@ export const useAuthStore = create<AuthState>()(
 
                     localStorage.clear();
                     useChatStore.getState().reset();
-                    
+
                     // call api
                     await authService.signIn(username, password);
-                    const { accessToken } = await authService.signIn(username, password);
+                    const { accessToken } = await authService.signIn(
+                        username,
+                        password,
+                    );
                     get().setAccessToken(accessToken);
 
                     // after sign in call fetchMe
@@ -59,43 +74,43 @@ export const useAuthStore = create<AuthState>()(
                     console.log(error);
                     toast.error("Đăng nhập không thành công");
                 } finally {
-                    set({ loading: false })
+                    set({ loading: false });
                 }
             },
 
             signOut: async () => {
                 try {
-                    set({ loading: true })
+                    set({ loading: true });
                     // call api
-                    await authService.signOut()
+                    await authService.signOut();
                     get().clearState();
                     toast.success("Đăng xuất thành công!");
                 } catch (error) {
                     console.log(error);
                     toast.error("Đăng xuất không thành công");
                 } finally {
-                    set({ loading: false })
+                    set({ loading: false });
                 }
             },
 
             fetchMe: async () => {
                 try {
-                    set({ loading: true })
+                    set({ loading: true });
                     // call api
                     const user = await authService.fetchMe();
-                    set({ user })
+                    set({ user });
                 } catch (error) {
                     console.log(error);
                     set({ user: null, accessToken: null });
                     toast.error("Lỗi khi lấy dữ liệu người dùng");
                 } finally {
-                    set({ loading: false })
+                    set({ loading: false });
                 }
             },
 
             refresh: async () => {
                 try {
-                    set({ loading: true })
+                    set({ loading: true });
                     const { user, fetchMe, setAccessToken } = get();
                     // call api
                     const accessToken = await authService.refresh();
@@ -111,13 +126,13 @@ export const useAuthStore = create<AuthState>()(
                     toast.error("Lỗi khi gọi refreshToken");
                     get().clearState();
                 } finally {
-                    set({ loading: false })
+                    set({ loading: false });
                 }
-            }
+            },
         }),
         {
             name: "auth-storage",
-            partialize: (state) => ({ user: state.user }) // get only persist user
-        }
-    )
-)
+            partialize: (state) => ({ user: state.user }), // get only persist user
+        },
+    ),
+);

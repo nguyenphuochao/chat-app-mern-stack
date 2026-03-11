@@ -1,3 +1,4 @@
+import { uploadImageFromBuffer } from "../middlewares/uploadMiddleware.js";
 import User from "../models/User.js";
 
 export const authMe = async (req, res) => {
@@ -31,13 +32,13 @@ export const searchUserByUsername = async (req, res) => {
     }
 };
 
-export const uploadAvatar = async () => {
+export const uploadAvatar = async (req, res) => {
     try {
         const file = req.file;
         const userId = req.user._id;
 
         if (!file) {
-            return res.status(400).json({ message: "Cần cung cấp file" });
+            return res.status(400).json({ message: "No upload file" });
         }
 
         const result = await uploadImageFromBuffer(file.buffer);
@@ -45,7 +46,7 @@ export const uploadAvatar = async () => {
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             {
-                avatarUrl: result.url,
+                avatarUrl: result.secure_url,
                 avatarId: result.public_id,
             },
             {
