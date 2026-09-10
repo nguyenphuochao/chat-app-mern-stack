@@ -29,6 +29,14 @@ const PORT = process.env.PORT || 5001;
 console.log("ACCESS_TOKEN_SECRET:", process.env.ACCESS_TOKEN_SECRET);
 console.log("MONGODB_CONNECTIONSTRING:", process.env.MONGODB_CONNECTIONSTRING);
 
+// ping monitors online render
+app.use("/ping", (req, res) => {
+    res.status(200).json({
+        status: "ok"
+    });
+})
+
+
 // middleware
 app.use(express.json()); // support body request json
 app.use(cookieParser());
