@@ -25,6 +25,10 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5001;
 
+// check log
+console.log("ACCESS_TOKEN_SECRET:", process.env.ACCESS_TOKEN_SECRET);
+console.log("MONGODB_CONNECTIONSTRING:", process.env.MONGODB_CONNECTIONSTRING);
+
 // middleware
 app.use(express.json()); // support body request json
 app.use(cookieParser());
